@@ -89,8 +89,8 @@ func main() {
 	// Rotas de Clientes
 	clienteRouter := r.PathPrefix("/clientes").Subrouter()
 	r.HandleFunc("/clientes", clienteController.ListarClientes).Methods("GET")
-	clienteRouter.HandleFunc("/count", clienteController.CountClientes).Methods("GET")          // <-- mover para cima
-	clienteRouter.HandleFunc("/search", clienteController.BuscarClientesPorNome).Methods("GET") // <-- mover também
+	clienteRouter.HandleFunc("/count", clienteController.CountClientes).Methods("GET")
+	clienteRouter.HandleFunc("/search", clienteController.BuscarClientesPorNome).Methods("GET")
 	clienteRouter.HandleFunc("", clienteController.CriarCliente).Methods("POST")
 	clienteRouter.HandleFunc("/{id}", clienteController.BuscarClientePorID).Methods("GET")
 	clienteRouter.HandleFunc("/{id}", clienteController.AtualizarCliente).Methods("PUT")
