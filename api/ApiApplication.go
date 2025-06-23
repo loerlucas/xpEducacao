@@ -89,33 +89,33 @@ func main() {
 	// Rotas de Clientes
 	clienteRouter := r.PathPrefix("/clientes").Subrouter()
 	r.HandleFunc("/clientes", clienteController.ListarClientes).Methods("GET")
+	clienteRouter.HandleFunc("/count", clienteController.CountClientes).Methods("GET")          // <-- mover para cima
+	clienteRouter.HandleFunc("/search", clienteController.BuscarClientesPorNome).Methods("GET") // <-- mover também
 	clienteRouter.HandleFunc("", clienteController.CriarCliente).Methods("POST")
 	clienteRouter.HandleFunc("/{id}", clienteController.BuscarClientePorID).Methods("GET")
 	clienteRouter.HandleFunc("/{id}", clienteController.AtualizarCliente).Methods("PUT")
 	clienteRouter.HandleFunc("/{id}", clienteController.DeletarCliente).Methods("DELETE")
-	clienteRouter.HandleFunc("/count", clienteController.CountClientes).Methods("GET")
-	clienteRouter.HandleFunc("/search", clienteController.BuscarClientesPorNome).Methods("GET")
 
 	// Rotas de Produtos
 	produtoRouter := r.PathPrefix("/produtos").Subrouter()
 	produtoRouter.HandleFunc("", produtoController.ListarProdutos).Methods("GET")
+	produtoRouter.HandleFunc("/count", produtoController.CountProdutos).Methods("GET")
+	produtoRouter.HandleFunc("/search", produtoController.BuscarProdutosPorNome).Methods("GET")
 	produtoRouter.HandleFunc("", produtoController.CriarProduto).Methods("POST")
 	produtoRouter.HandleFunc("/{id}", produtoController.BuscarProdutoPorID).Methods("GET")
 	produtoRouter.HandleFunc("/{id}", produtoController.AtualizarProduto).Methods("PUT")
 	produtoRouter.HandleFunc("/{id}", produtoController.DeletarProduto).Methods("DELETE")
-	produtoRouter.HandleFunc("/count", produtoController.CountProdutos).Methods("GET")
-	produtoRouter.HandleFunc("/search", produtoController.BuscarProdutosPorNome).Methods("GET")
 
 	// Rotas de Pedidos
 	pedidoRouter := r.PathPrefix("/pedidos").Subrouter()
 	pedidoRouter.HandleFunc("", pedidoController.ListarPedidos).Methods("GET")
+	pedidoRouter.HandleFunc("/count", pedidoController.CountPedidos).Methods("GET")
+	pedidoRouter.HandleFunc("/search", pedidoController.BuscarPedidosPorNomeCliente).Methods("GET")
 	pedidoRouter.HandleFunc("", pedidoController.CriarPedido).Methods("POST")
 	pedidoRouter.HandleFunc("/{id}", pedidoController.BuscarPedidoPorID).Methods("GET")
 	pedidoRouter.HandleFunc("/{id}/status", pedidoController.AtualizarStatusPedido).Methods("PUT")
 	pedidoRouter.HandleFunc("/{id}/cancelar", pedidoController.CancelarPedido).Methods("POST")
 	pedidoRouter.HandleFunc("/{id}", pedidoController.DeletarPedido).Methods("DELETE")
-	pedidoRouter.HandleFunc("/count", pedidoController.CountPedidos).Methods("GET")
-	pedidoRouter.HandleFunc("/search", pedidoController.BuscarPedidosPorNomeCliente).Methods("GET")
 
 	// Documentação Swagger
 	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
