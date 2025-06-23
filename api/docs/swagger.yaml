@@ -1,0 +1,607 @@
+basePath: /
+definitions:
+  model.Cliente:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      nome:
+        type: string
+    type: object
+  model.ItemPedido:
+    properties:
+      preco_unit:
+        type: number
+      produto_id:
+        type: string
+      quantidade:
+        type: integer
+      subtotal:
+        type: number
+    type: object
+  model.Pedido:
+    properties:
+      cliente_id:
+        type: string
+      data:
+        type: string
+      id:
+        type: string
+      itens:
+        items:
+          $ref: '#/definitions/model.ItemPedido'
+        type: array
+      status:
+        type: string
+      total:
+        type: number
+    type: object
+  model.Produto:
+    properties:
+      categoria:
+        type: string
+      descricao:
+        type: string
+      estoque:
+        type: integer
+      id:
+        type: string
+      nome:
+        type: string
+      preco:
+        type: number
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: suporte@api.com
+    name: Suporte API
+    url: http://www.suporte.com
+  description: API para gerenciamento de e-commerce
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: API de E-commerce
+  version: "1.0"
+paths:
+  /clientes:
+    get:
+      description: Retorna a lista completa de clientes cadastrados
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Cliente'
+            type: array
+      summary: Lista todos os clientes
+      tags:
+      - clientes
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo cliente no sistema
+      parameters:
+      - description: Dados do Cliente
+        in: body
+        name: cliente
+        required: true
+        schema:
+          $ref: '#/definitions/model.Cliente'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Dados inválidos
+          schema:
+            type: string
+        "409":
+          description: Cliente já existe
+          schema:
+            type: string
+      summary: Adiciona um novo cliente
+      tags:
+      - clientes
+  /clientes/{id}:
+    delete:
+      description: Remove um cliente do sistema
+      parameters:
+      - description: ID do Cliente
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Cliente possui pedidos associados
+          schema:
+            type: string
+        "404":
+          description: Cliente não encontrado
+          schema:
+            type: string
+      summary: Remove um cliente
+      tags:
+      - clientes
+    get:
+      description: Retorna os detalhes de um cliente específico
+      parameters:
+      - description: ID do Cliente
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Cliente'
+        "404":
+          description: Cliente não encontrado
+          schema:
+            type: string
+      summary: Busca um cliente por ID
+      tags:
+      - clientes
+    put:
+      consumes:
+      - application/json
+      description: Atualiza os dados de um cliente existente
+      parameters:
+      - description: ID do Cliente
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Dados atualizados do Cliente
+        in: body
+        name: cliente
+        required: true
+        schema:
+          $ref: '#/definitions/model.Cliente'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Dados inválidos
+          schema:
+            type: string
+        "404":
+          description: Cliente não encontrado
+          schema:
+            type: string
+      summary: Atualiza um cliente
+      tags:
+      - clientes
+  /clientes/count:
+    get:
+      description: Retorna o número total de clientes cadastrados no sistema
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Número total de clientes
+          schema:
+            type: integer
+      summary: Retorna a contagem total de clientes
+      tags:
+      - clientes
+  /clientes/search:
+    get:
+      description: Retorna os clientes cujos nomes correspondem ao parâmetro de busca
+      parameters:
+      - description: Nome ou parte do nome para busca
+        in: query
+        name: nome
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Cliente'
+            type: array
+        "400":
+          description: Nome não pode ser vazio
+          schema:
+            type: string
+      summary: Busca clientes por nome
+      tags:
+      - clientes
+  /pedidos:
+    get:
+      description: Retorna a lista completa de pedidos cadastrados
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Pedido'
+            type: array
+      summary: Lista todos os pedidos
+      tags:
+      - pedidos
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo pedido no sistema
+      parameters:
+      - description: Dados do Pedido
+        in: body
+        name: pedido
+        required: true
+        schema:
+          $ref: '#/definitions/model.Pedido'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Dados inválidos
+          schema:
+            type: string
+        "404":
+          description: Cliente ou produto não encontrado
+          schema:
+            type: string
+        "422":
+          description: Estoque insuficiente
+          schema:
+            type: string
+      summary: Adiciona um novo pedido
+      tags:
+      - pedidos
+  /pedidos/{id}:
+    delete:
+      description: Remove um pedido do sistema (apenas pedidos cancelados)
+      parameters:
+      - description: ID do Pedido
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Pedido não pode ser deletado
+          schema:
+            type: string
+        "404":
+          description: Pedido não encontrado
+          schema:
+            type: string
+      summary: Remove um pedido
+      tags:
+      - pedidos
+    get:
+      description: Retorna os detalhes de um pedido específico
+      parameters:
+      - description: ID do Pedido
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Pedido'
+        "404":
+          description: Pedido não encontrado
+          schema:
+            type: string
+      summary: Busca um pedido por ID
+      tags:
+      - pedidos
+  /pedidos/{id}/cancelar:
+    post:
+      description: Cancela um pedido e devolve os produtos ao estoque
+      parameters:
+      - description: ID do Pedido
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Pedido não encontrado
+          schema:
+            type: string
+      summary: Cancela um pedido
+      tags:
+      - pedidos
+  /pedidos/{id}/status:
+    put:
+      consumes:
+      - application/json
+      description: Altera o status de um pedido existente
+      parameters:
+      - description: ID do Pedido
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Novo status
+        in: body
+        name: status
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Status inválido
+          schema:
+            type: string
+        "404":
+          description: Pedido não encontrado
+          schema:
+            type: string
+      summary: Atualiza status do pedido
+      tags:
+      - pedidos
+  /pedidos/count:
+    get:
+      description: Retorna o número total de pedidos cadastrados no sistema
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Número total de pedidos
+          schema:
+            type: integer
+      summary: Retorna a contagem total de pedidos
+      tags:
+      - pedidos
+  /pedidos/search:
+    get:
+      description: Retorna os pedidos cujos clientes têm nomes que correspondem ao
+        parâmetro de busca
+      parameters:
+      - description: Nome ou parte do nome do cliente para busca
+        in: query
+        name: nome
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Pedido'
+            type: array
+        "400":
+          description: Nome não pode ser vazio
+          schema:
+            type: string
+      summary: Busca pedidos por nome do cliente
+      tags:
+      - pedidos
+  /produtos:
+    get:
+      description: Retorna a lista completa de produtos cadastrados
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Produto'
+            type: array
+      summary: Lista todos os produtos
+      tags:
+      - produtos
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo produto no sistema
+      parameters:
+      - description: Dados do Produto
+        in: body
+        name: produto
+        required: true
+        schema:
+          $ref: '#/definitions/model.Produto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Dados inválidos
+          schema:
+            type: string
+        "409":
+          description: Produto já existe
+          schema:
+            type: string
+      summary: Adiciona um novo produto
+      tags:
+      - produtos
+  /produtos/{id}:
+    delete:
+      description: Remove um produto do sistema
+      parameters:
+      - description: ID do Produto
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Produto está em pedidos
+          schema:
+            type: string
+        "404":
+          description: Produto não encontrado
+          schema:
+            type: string
+      summary: Remove um produto
+      tags:
+      - produtos
+    get:
+      description: Retorna os detalhes de um produto específico
+      parameters:
+      - description: ID do Produto
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Produto'
+        "404":
+          description: Produto não encontrado
+          schema:
+            type: string
+      summary: Busca um produto por ID
+      tags:
+      - produtos
+    put:
+      consumes:
+      - application/json
+      description: Atualiza os dados de um produto existente
+      parameters:
+      - description: ID do Produto
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Dados atualizados do Produto
+        in: body
+        name: produto
+        required: true
+        schema:
+          $ref: '#/definitions/model.Produto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Dados inválidos
+          schema:
+            type: string
+        "404":
+          description: Produto não encontrado
+          schema:
+            type: string
+      summary: Atualiza um produto
+      tags:
+      - produtos
+  /produtos/{id}/estoque:
+    patch:
+      consumes:
+      - application/json
+      description: Ajusta a quantidade em estoque de um produto (positivo para incrementar,
+        negativo para decrementar)
+      parameters:
+      - description: ID do Produto
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Quantidade para ajuste
+        in: body
+        name: quantidade
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Quantidade inválida
+          schema:
+            type: string
+        "404":
+          description: Produto não encontrado
+          schema:
+            type: string
+      summary: Atualiza estoque
+      tags:
+      - produtos
+  /produtos/count:
+    get:
+      description: Retorna o número total de produtos cadastrados no sistema
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Número total de produtos
+          schema:
+            type: integer
+      summary: Retorna a contagem total de produtos
+      tags:
+      - produtos
+  /produtos/search:
+    get:
+      description: Retorna os produtos cujos nomes correspondem ao parâmetro de busca
+      parameters:
+      - description: Nome ou parte do nome para busca
+        in: query
+        name: nome
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Produto'
+            type: array
+        "400":
+          description: Nome não pode ser vazio
+          schema:
+            type: string
+      summary: Busca produtos por nome
+      tags:
+      - produtos
+swagger: "2.0"
